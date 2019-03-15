@@ -1,0 +1,53 @@
+<project name="TwitUp" default="compile" basedir="." xmlns:sonar="antlib:org.sonar.ant">
+	<!-- set global properties for this build -->
+	<property name="src" location="src"/>
+	<property name="build" location="build"/>
+	<property name="jar" location="jar"/>
+	
+	<!-- Define the SonarQube global properties (the most usual way is to pass these properties via the command line) -->
+	<property name="sonar.host.url" value="http://localhost:9000" />
+
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp/>
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}"/>
+		<mkdir dir="${jar}"/>
+	</target>
+
+	<target name="compile" depends="clean, init"
+        description="compile the source">
+		<!-- Compile the Java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}"/>
+	</target>
+
+	<target name="jar" depends="clean,compile">
+		<jar destfile="jar/TwitupLauncher.jar" basedir="build" includes="com/**" >
+			<manifest>
+				<attribute name="Main-Class" value="com.iup.tp.twitup.TwitupLauncher"/>
+			</manifest>
+		</jar>
+	</target>
+
+  <target name="sonar">
+  	<!-- Define the SonarQube project properties -->
+  	<property name="sonar.projectKey" value="org.sonarqube:sonarqube-scanner-ant" />
+  	<property name="sonar.projectName" value="SonarQube Scanner for Ant Usage in TwitUp" />
+  	<property name="sonar.projectVersion" value="1.0" />
+  	
+  	<property name="sonar.sources" value="${src}" />
+  	<property name="sonar.java.binaries" value="${build}" />
+  	<property name="sonar.java.libraries" value="lib/*.jar" />
+  	<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+  		<!-- Update the following line, or put the "sonarqube-ant-task-*.jar" file in your "$HOME/.ant/lib" folder -->
+      <classpath path="lib/sonarqube-ant-task-*.jar" />
+    </taskdef>
+    <sonar:sonar />
+  </target>
+
+	<target name="clean"
+        description="clean up">
+		<delete dir="${build}"/>
+		<delete dir="${jar}"/>
+	</target>
+</project>
